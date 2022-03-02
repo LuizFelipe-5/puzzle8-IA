@@ -6,11 +6,11 @@ import os
 
 class Puzzle():
 	def __init__(self, puzz):
-		self.__finalState = puzz
-		self.__initialState = deepcopy(puzz)
-		self.__movesList = ['13', '024', '15', '046', '1357', '248', '37', '468', '57']
+		self.__final_state = puzz
+		self.__initial_state = deepcopy(puzz)
+		self.__moves_list = ['13', '024', '15', '046', '1357', '248', '37', '468', '57']
 		
-		self.__distanceDict = {
+		self.__distance_dict = {
 		0: [4, 3, 2, 3, 2, 1, 2, 1, 0],
 		1: [0, 1, 2, 1, 2, 3, 2, 3, 4],
 		2: [1, 0, 1, 2, 1, 2, 3, 2, 3],
@@ -25,39 +25,40 @@ class Puzzle():
 		self.__level = 0
 
 		self.__visited = {}
-		self.__visitedAUX = {}
+		self.__visited_manhattan = {}
 		
+		self.get_final_state()
+		self.shuffle_puzzle(self.__initial_state, 30)
+
+		self.__initial_state_manhattan = deepcopy(self.__initial_state)
+		
+		self.__visited[tuple(self.__initial_state)] = 0
+		self.__visited_manhattan[tuple(self.__initial_state_manhattan)] = 0
+		
+	def get_final_state(self):
+		self.clear_terminal()
+
 		print('Sua configuracao inicial')
-		self.printMatrix(self.__finalState)
+		self.print_matrix(self.__final_state)
+
 		sleep(5)
-		self.clearTerminal()
-		self.shufflePuzzle(self.__initialState, 10)
-		print('Seu puzzle embaralhado')
-		self.printMatrix(self.__initialState)
+		self.clear_terminal()
+
+		return self.__final_state
 		
-		self.__initialStateAUX = deepcopy(self.__initialState)
-		
-		self.__visited[tuple(self.__initialState)] = 0
-		self.__visitedAUX[tuple(self.__initialStateAUX)] = 0
-		
+	def get_initial_state(self):
+		return self.__initial_state
 	
-	
-	def getFinalState(self):
-		return self.__finalState
+	def get_initial_state_manhattan(self):
+		return self.__initial_state_manhattan
 		
-	def getInitialState(self):
-		self.printMatrix(self.__initialState)
-	
-	def getInitialStateAUX(self):
-		self.printMatrix(self.__initialStateAUX)
-		
-	def getFinalLevel(self):
+	def get_final_level(self):
 		return self.__level
 	
-	def clearTerminal(self):
+	def clear_terminal(self):
 		os.system('cls' if os.name == 'nt' else 'clear')
 	
-	def printMatrix(self, m):
+	def print_matrix(self, m):
 		print()
 		pos = deepcopy(m)
 		
@@ -67,9 +68,11 @@ class Puzzle():
 			pos[i] = ' '
 			
 			valor =('| {} | {} | {} |\n'+
-					 '| {} | {} | {} |\n'+
-					 '| {} | {} | {} |\n').format(pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7],pos[8])
+				    '| {} | {} | {} |\n'+
+					'| {} | {} | {} |\n').format(pos[0],pos[1],pos[2],pos[3],pos[4],pos[5],pos[6],pos[7],pos[8])
+			
 			print(valor)
+
 			sleep(0.5)
 		else:
 			for item in pos:
@@ -78,43 +81,39 @@ class Puzzle():
 				item[i] = ' '
 				
 				valor =('| {} | {} | {} |\n'+
-						 '| {} | {} | {} |\n'+
-						 '| {} | {} | {} |\n').format(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8])
+						'| {} | {} | {} |\n'+
+					    '| {} | {} | {} |\n').format(item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8])
 				print(valor)
 				sleep(0.5)
 				
-				
-		
-
 	def swap(self, m, pos_1, pos_2):
-		
 		m[int(pos_1)], m[int(pos_2)] = m[int(pos_2)], m[int(pos_1)]
 		
 		return m
 
-	def getIndex_zero(self, m):
+	def get_index_zero(self, m):
 		return m.index(0)
 
-
-	def shufflePuzzle(self, p, n):
+	def shuffle_puzzle(self, p, n):
 		for i in range(n):
 			print('Embaralhando seu puzzle')
-			j = self.getIndex_zero(p)
-			rand = randint(0, len(self.__movesList[j])-1)
-			move = self.__movesList[j]
+
+			j = self.get_index_zero(p)
+			rand = randint(0, len(self.__moves_list[j])-1)
+			move = self.__moves_list[j]
 			p = self.swap(p, j, move[rand])
 			
-			self.printMatrix(p)
-			self.clearTerminal()
+			self.print_matrix(p)
+			self.clear_terminal()
 	
-	def solvePuzzle(self):
+	def solve_puzzle_bfs(self):
 		accept = False
 		index = 0
 		result = 0
 		print()
 		
-		if tuple(self.__finalState) in self.__visited.keys():
-			print(self.__finallState)
+		if tuple(self.__final_state) in self.__visited.keys():
+			print(self.__final_state)
 			print(len(self.__visited))
 			return 0
 		
@@ -123,8 +122,8 @@ class Puzzle():
 			self.__level+=1
 
 			for son in sons:
-				z = self.getIndex_zero(list(son))
-				for x in self.__movesList[z]:
+				z = self.get_index_zero(list(son))
+				for x in self.__moves_list[z]:
 					new_son = self.swap(list(son), z, x)
 					result+= 1
 					
@@ -132,38 +131,38 @@ class Puzzle():
 					if tuple(new_son) not in self.__visited:
 						self.__visited[tuple(new_son)] = index + 1
 					
-					if new_son == self.__finalState:
+					if new_son == self.__final_state:
 						accept = True
 						return result
 			index+= 1
 	
-	def getManhattanD(self, m):
+	def get_manhattan_distance(self, m):
 		dist = 0
 		
 		for i in m:
 			index = m.index(i)
-			d_vector = self.__distanceDict[i]
+			d_vector = self.__distance_dict[i]
 			dist+= d_vector[index]
 		
 		return dist
 		
-	def sort_func(element):
-		return element[1]
+	def sort_func(self):
+		return self[1]
 
-	def solvePuzzleManhattan(self):
+	def solve_puzzle_manhattan(self):
 		accept = False
 		result = 0
 		index = 0
 		way = {}
 		print()
 		distance_now = 10000000000
-		sorted_list = [tuple([tuple(son), self.getManhattanD(son)]) for son in self.__visitedAUX if self.__visitedAUX[son] == index]
+		sorted_list = [tuple([tuple(son), self.get_manhattan_distance(son)]) for son in self.__visited_manhattan if self.__visited_manhattan[son] == index]
 		sorted_list.sort(key=Puzzle.sort_func)
 		
 		
 		while not accept:			
 	
-			if list(sorted_list[0][0]) == self.__finalState:
+			if list(sorted_list[0][0]) == self.__final_state:
 				accept = True
 				tree = []
 				result+=1
@@ -175,30 +174,29 @@ class Puzzle():
 				while not root:
 					tree.append(list(item))
 					item = way[tuple(item)]
-					if list(item) == self.__initialState:
+					if list(item) == self.__initial_state:
 						root = True
 					
 
 				
-				tree.append(self.__initialState)
+				tree.append(self.__initial_state)
 				tree.reverse()
-				self.printMatrix(tree)
+				self.print_matrix(tree)
 				
 					
 				return len(tree)-1, result
 			
-			z = self.getIndex_zero(list(sorted_list[0][0]))
+			z = self.get_index_zero(list(sorted_list[0][0]))
 			
-			for x in self.__movesList[z]:
+			for x in self.__moves_list[z]:
 				new_son = tuple(self.swap(list(sorted_list[0][0]), z, x))
-				if new_son in self.__visitedAUX:
+				if new_son in self.__visited_manhattan:
 					continue
-				self.__visitedAUX[new_son] = index + 1
+				self.__visited_manhattan[new_son] = index + 1
 				way[deepcopy(new_son)] = list(deepcopy(sorted_list[0][0]))
 
-				sorted_list.append(tuple([new_son, self.getManhattanD(list(new_son))]))
+				sorted_list.append(tuple([new_son, self.get_manhattan_distance(list(new_son))]))
 			
-
 			sorted_list.pop(0)
 			result+=1	
 			
