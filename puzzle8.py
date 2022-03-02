@@ -23,9 +23,7 @@ class Puzzle():
 		}
 		
 		self.__level = 0
-		
-		
-		
+
 		self.__visited = {}
 		self.__visitedAUX = {}
 		
@@ -42,8 +40,7 @@ class Puzzle():
 		self.__visited[tuple(self.__initialState)] = 0
 		self.__visitedAUX[tuple(self.__initialStateAUX)] = 0
 		
-		
-		
+	
 	
 	def getFinalState(self):
 		return self.__finalState
@@ -150,7 +147,6 @@ class Puzzle():
 		
 		return dist
 		
-
 	def sort_func(element):
 		return element[1]
 
@@ -193,8 +189,6 @@ class Puzzle():
 			
 			z = self.getIndex_zero(list(sorted_list[0][0]))
 			
-			
-			
 			for x in self.__movesList[z]:
 				new_son = tuple(self.swap(list(sorted_list[0][0]), z, x))
 				if new_son in self.__visitedAUX:
@@ -209,14 +203,4 @@ class Puzzle():
 			result+=1	
 			
 			sorted_list.sort(key=Puzzle.sort_func)
-			
-
-def main():
-	puzzle8 = Puzzle([1,2,3,4,5,6,7,8,0])
-	#print('Resolvido em {} tentativas'.format(puzzle8.solvePuzzle()))
-	print(puzzle8.solvePuzzleManhattan())
-	
-	
-
-main()
 	
