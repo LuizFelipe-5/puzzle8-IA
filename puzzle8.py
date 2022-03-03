@@ -3,7 +3,6 @@ from copy import deepcopy
 from time import sleep
 import os
 
-
 class Puzzle():
 	def __init__(self, puzz):
 		self.__final_state = puzz
@@ -28,7 +27,7 @@ class Puzzle():
 		self.__visited_manhattan = {}
 		
 		self.get_final_state()
-		self.shuffle_puzzle(self.__initial_state, 30)
+		self.shuffle_puzzle(self.__initial_state, 50)
 
 		self.__initial_state_manhattan = deepcopy(self.__initial_state)
 		
@@ -113,8 +112,6 @@ class Puzzle():
 		print()
 		
 		if tuple(self.__final_state) in self.__visited.keys():
-			print(self.__final_state)
-			print(len(self.__visited))
 			return 0
 		
 		while not accept:
@@ -154,11 +151,11 @@ class Puzzle():
 		result = 0
 		index = 0
 		way = {}
+
 		print()
-		distance_now = 10000000000
+		
 		sorted_list = [tuple([tuple(son), self.get_manhattan_distance(son)]) for son in self.__visited_manhattan if self.__visited_manhattan[son] == index]
 		sorted_list.sort(key=Puzzle.sort_func)
-		
 		
 		while not accept:			
 	
@@ -166,25 +163,30 @@ class Puzzle():
 				accept = True
 				tree = []
 				result+=1
-				item =  list(way.keys())
-				item = item[-1]
 				
-				root = False
-				
-				while not root:
-					tree.append(list(item))
-					item = way[tuple(item)]
-					if list(item) == self.__initial_state:
-						root = True
+				if len(way) > 0:
+					item =  list(way.keys())
+					item = item[-1]
 					
+					root = False
+					
+					while not root:
+						tree.append(list(item))
+						item = way[tuple(item)]
+						if list(item) == self.__initial_state:
+							root = True
+						
 
-				
-				tree.append(self.__initial_state)
-				tree.reverse()
-				self.print_matrix(tree)
-				
 					
-				return len(tree)-1, result
+					tree.append(self.__initial_state)
+					tree.reverse()
+					self.print_matrix(tree)
+					
+						
+					return len(tree)-1, result
+				else:
+					self.print_matrix(self.__final_state)
+					return 0, 0
 			
 			z = self.get_index_zero(list(sorted_list[0][0]))
 			
