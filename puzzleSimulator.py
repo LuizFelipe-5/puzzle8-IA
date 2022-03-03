@@ -22,7 +22,7 @@ def main():
 	
 	
 	best_way, attempts = puzzle8.solve_puzzle_manhattan()
-	print('Resolvido em {} tentativas via  distancia Manhattan\nA solucao minima necessita de {} tentativas e se encontra acima'.format(attempts, best_way))
+	print('Resolvido em {} tentativas via distancia Manhattan\nA solucao minima necessita de {} tentativas e se encontra acima'.format(attempts, best_way))
 
 
 if __name__ == "__main__":
